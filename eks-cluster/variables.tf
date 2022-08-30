@@ -1,3 +1,9 @@
+variable "kubernetes_config_path" {
+  type        = string
+  description = "The path to the Kubernetes config"
+  default     = "~/.kube/config"
+}
+
 variable "cluster_name" {
   type        = string
   description = "Name of the EKS Cluster"
@@ -27,10 +33,16 @@ variable "ng_instance_types" {
   default     = "t3.xlarge"
 }
 
-variable "ng_min_size" {
+variable "ng_desired_size" {
   type        = string
-  description = "Node group minimum size"
+  description = "Node group desired size"
   default     = "3"
+}
+
+variable "ng_max_size" {
+  type        = string
+  description = "Node group max size"
+  default     = "4"
 }
 
 variable "aws_account_id" {

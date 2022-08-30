@@ -3,25 +3,27 @@ provider "aws" {
 }
 
 provider "kubernetes" {
-  host                   = module.eks.eks_cluster_endpoint
-  cluster_ca_certificate = base64decode(module.eks.eks_cluster_certificate_authority_data)
+  host                   = module.eks.cluster_endpoint
+  cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
+  config_path            = var.kubernetes_config_path
 
   exec {
     api_version = "client.authentication.k8s.io/v1"
     command     = "aws"
-    args        = ["eks", "get-token", "--cluster-name", module.eks.eks_cluster_id]
+    args        = ["eks", "get-token", "--cluster-name", module.eks.cluster_id]
   }
 }
 
 provider "helm" {
   kubernetes {
-    host                   = module.eks.eks_cluster_endpoint
-    cluster_ca_certificate = base64decode(module.eks.eks_cluster_certificate_authority_data)
+    host                   = module.eks.cluster_endpoint
+    cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
+    config_path            = var.kubernetes_config_path
 
     exec {
       api_version = "client.authentication.k8s.io/v1"
       command     = "aws"
-      args        = ["eks", "get-token", "--cluster-name", module.eks.eks_cluster_id]
+      args        = ["eks", "get-token", "--cluster-name", module.eks.cluster_id]
     }
   }
 }
@@ -57,23 +59,25 @@ module "vpc" {
 }
 
 module "eks" {
-  source = "github.com/aws-ia/terraform-aws-eks-blueprints"
+  source  = "terraform-aws-modules/eks/aws"
+  version = "~> 18.29.0"
 
-  cluster_name       = var.cluster_name
-  vpc_id             = module.vpc.vpc_id
-  private_subnet_ids = module.vpc.private_subnets
-  cluster_version    = var.eks_cluster_version
+  cluster_name    = var.cluster_name
+  vpc_id          = module.vpc.vpc_id
+  subnet_ids      = module.vpc.private_subnets
+  cluster_version = var.eks_cluster_version
 
-  managed_node_groups = {
+  eks_managed_node_groups = {
     node_group = {
       node_group_name = "managed-nodegroup"
       instance_types  = [var.ng_instance_types]
-      min_size        = var.ng_min_size
+      desired_size    = var.ng_desired_size
+      max_size        = var.ng_max_size
       subnet_ids      = module.vpc.private_subnets
     }
   }
 
-  map_roles = [
+  aws_auth_roles = [
     {
       rolearn  = "arn:aws:iam::${var.aws_account_id}:role/eks-admin"
       username = "cluster-admin"
@@ -81,7 +85,7 @@ module "eks" {
     }
   ]
 
-  map_users = [
+  aws_auth_users = [
     {
       userarn  = "arn:aws:iam::${var.aws_account_id}:user/aspenmesh_circleci_automation_programmatic_access"
       username = "cluster-admin"
