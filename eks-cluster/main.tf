@@ -62,10 +62,11 @@ module "eks" {
   source  = "terraform-aws-modules/eks/aws"
   version = "~> 18.29.0"
 
-  cluster_name    = var.cluster_name
-  vpc_id          = module.vpc.vpc_id
-  subnet_ids      = module.vpc.private_subnets
-  cluster_version = var.eks_cluster_version
+  cluster_name                = var.cluster_name
+  vpc_id                      = module.vpc.vpc_id
+  subnet_ids                  = module.vpc.private_subnets
+  cluster_version             = var.eks_cluster_version
+  create_cloudwatch_log_group = var.create_cloudwatch_log_group
 
   eks_managed_node_groups = {
     node_group = {

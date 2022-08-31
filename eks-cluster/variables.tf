@@ -49,3 +49,9 @@ variable "aws_account_id" {
   type        = string
   description = "AWS account id to use"
 }
+
+variable "create_cloudwatch_log_group" {
+  type        = bool
+  description = "Whether or not to create a CloudWatch log group"
+  default     = false
+}
