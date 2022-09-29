@@ -19,10 +19,6 @@ Ensure that you have installed the following tools before you start working with
 
 ### Deployment Steps
 
-_Note:_ Because of the way that the Kubernetes provider works, there are two separate Terraform configurations (`cluster` and `workloads`).  The Kubernetes provider requires an existing Kubernetes cluster to fetch metadata, so the EKS cluster needs to be created prior to instantiating the Kubernetes provider.
-
-If you already have a Kubernetes cluster, you can skip to [Step 7](#step-7-run-terraform-init-for-the-workloads).
-
 #### Step 1: Clone the repo using the command below
 
 ```shell script
